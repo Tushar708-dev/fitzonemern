@@ -32,33 +32,37 @@ export default function Navbar() {
   }
 
   return (
-    <header className={`navbar ${scrolled || open ? "navbar-solid" : ""}`}>
-      <div className="container nav-inner">
-        <Link to="/" className="logo">FIT<span>ZONE</span></Link>
+    <>
+      <header className={`navbar ${scrolled ? "navbar-solid" : ""}`}>
+        <div className="container nav-inner">
+          <Link to="/" className="logo">FIT<span>ZONE</span></Link>
 
-        <button className={`hamburger ${open ? "is-open" : ""}`} onClick={() => setOpen(!open)} aria-label="Toggle menu" aria-expanded={open}>
-          <span /><span /><span />
-        </button>
+          <button className={`hamburger ${open ? "is-open" : ""}`} onClick={() => setOpen(!open)} aria-label="Toggle menu" aria-expanded={open}>
+            <span /><span /><span />
+          </button>
+        </div>
+      </header>
 
-        <nav className={`nav-links ${open ? "open" : ""}`}>
-          <NavLink to="/" end>Home</NavLink>
-          <NavLink to="/exercises">Exercises</NavLink>
-          <NavLink to="/bmi">BMI</NavLink>
-          <NavLink to="/contact">Contact</NavLink>
-          {user ? (
-            <>
-              <NavLink to="/workouts">My Workouts</NavLink>
-              <NavLink to="/dashboard">Dashboard</NavLink>
-              <button className="btn btn-outline btn-sm" onClick={handleLogout}>Logout</button>
-            </>
-          ) : (
-            <>
-              <NavLink to="/login">Log In</NavLink>
-              <Link to="/signup" className="btn btn-primary btn-sm">Sign Up</Link>
-            </>
-          )}
-        </nav>
-      </div>
-    </header>
+      {/* Rendered as a sibling of <header>, NOT inside it — a backdrop-filter/transform on an
+          ancestor breaks position:fixed children in Safari, so this must stay outside .navbar. */}
+      <nav className={`nav-links ${open ? "open" : ""}`}>
+        <NavLink to="/" end>Home</NavLink>
+        <NavLink to="/exercises">Exercises</NavLink>
+        <NavLink to="/bmi">BMI</NavLink>
+        <NavLink to="/contact">Contact</NavLink>
+        {user ? (
+          <>
+            <NavLink to="/workouts">My Workouts</NavLink>
+            <NavLink to="/dashboard">Dashboard</NavLink>
+            <button className="btn btn-outline btn-sm" onClick={handleLogout}>Logout</button>
+          </>
+        ) : (
+          <>
+            <NavLink to="/login">Log In</NavLink>
+            <Link to="/signup" className="btn btn-primary btn-sm">Sign Up</Link>
+          </>
+        )}
+      </nav>
+    </>
   );
 }
