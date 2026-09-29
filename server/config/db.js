@@ -8,7 +8,9 @@ async function connectDB() {
     process.exit(1);
   }
   try {
-    await mongoose.connect(uri);
+    // If MongoDB can't be reached, fail within 8 seconds instead of hanging
+    // (a long hang here is what makes Render's port scan time out with no clue why).
+    await mongoose.connect(uri, { serverSelectionTimeoutMS: 8000 });
     console.log("✅ MongoDB connected");
   } catch (err) {
     console.error("❌ MongoDB connection failed:", err.message);
