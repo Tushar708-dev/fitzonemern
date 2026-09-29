@@ -4,65 +4,124 @@ import { useAuth } from "../AuthContext";
 
 export default function Navbar() {
   const { user, logout } = useAuth();
-  const [open, setOpen] = useState(false);        // is the mobile menu open?
-  const [scrolled, setScrolled] = useState(false); // has the page been scrolled?
+
+  const [open, setOpen] = useState(false);
+  const [scrolled, setScrolled] = useState(false);
+
   const location = useLocation();
   const navigate = useNavigate();
 
-  // Make the navbar solid once you scroll down a little
   useEffect(() => {
-    const onScroll = () => setScrolled(window.scrollY > 20);
-    onScroll();
-    window.addEventListener("scroll", onScroll, { passive: true });
-    return () => window.removeEventListener("scroll", onScroll);
+    const handleScroll = () => {
+      setScrolled(window.scrollY > 20);
+    };
+
+    handleScroll();
+
+    window.addEventListener("scroll", handleScroll, { passive: true });
+
+    return () => {
+      window.removeEventListener("scroll", handleScroll);
+    };
   }, []);
 
-  // Close the mobile menu whenever the page changes
-  useEffect(() => setOpen(false), [location.pathname]);
+  useEffect(() => {
+    setOpen(false);
+  }, [location.pathname]);
 
-  // Stop the page behind the menu from scrolling while it is open
   useEffect(() => {
     document.body.classList.toggle("no-scroll", open);
-    return () => document.body.classList.remove("no-scroll");
+
+    return () => {
+      document.body.classList.remove("no-scroll");
+    };
   }, [open]);
 
   async function handleLogout() {
-    await logout();
-    navigate("/");
+    try {
+      await logout();
+      navigate("/");
+    } catch (error) {
+      console.error("Logout failed:", error);
+    }
+  }
+
+  function toggleMenu() {
+    setOpen((prev) => !prev);
   }
 
   return (
-    <>
-      <header className={`navbar ${scrolled ? "navbar-solid" : ""}`}>
-        <div className="container nav-inner">
-          <Link to="/" className="logo">FIT<span>ZONE</span></Link>
+    <header className={`navbar ${scrolled ? "navbar-solid" : ""}`}>
+      <div className="container nav-inner">
+        <Link to="/" className="logo" aria-label="FITZONE Home">
+          FIT<span>ZONE</span>
+        </Link>
 
-          <button className={`hamburger ${open ? "is-open" : ""}`} onClick={() => setOpen(!open)} aria-label="Toggle menu" aria-expanded={open}>
-            <span /><span /><span />
-          </button>
-        </div>
-      </header>
+        <nav
+          id="main-navigation"
+          className={`nav-links ${open ? "open" : ""}`}
+          aria-label="Main navigation"
+        >
+          <NavLink to="/" end>
+            Home
+          </NavLink>
 
-      {/* Rendered as a sibling of <header>, NOT inside it — a backdrop-filter/transform on an
-          ancestor breaks position:fixed children in Safari, so this must stay outside .navbar. */}
-      <nav className={`nav-links ${open ? "open" : ""}`}>
-        <NavLink to="/" end>Home</NavLink>
-        <NavLink to="/exercises">Exercises</NavLink>
-        <NavLink to="/bmi">BMI</NavLink>
-        <NavLink to="/contact">Contact</NavLink>
-        {user ? (
-          <>
-            <NavLink to="/workouts">My Workouts</NavLink>
-            <NavLink to="/dashboard">Dashboard</NavLink>
-            <button className="btn btn-outline btn-sm" onClick={handleLogout}>Logout</button>
-          </>
-        ) : (
-          <>
-            <NavLink to="/login">Log In</NavLink>
-            <Link to="/signup" className="btn btn-primary btn-sm">Sign Up</Link>
-          </>
-        )}
-      </nav>
-    </>
+          <NavLink to="/exercises">
+            Exercises
+          </NavLink>
+
+          <NavLink to="/bmi">
+            BMI
+          </NavLink>
+
+          <NavLink to="/contact">
+            Contact
+          </NavLink>
+
+          {user ? (
+            <>
+              <NavLink to="/workouts">
+                My Workouts
+              </NavLink>
+
+              <NavLink to="/dashboard">
+                Dashboard
+              </NavLink>
+
+              <button
+                type="button"
+                className="btn btn-outline btn-sm"
+                onClick={handleLogout}
+              >
+                Logout
+              </button>
+            </>
+          ) : (
+            <>
+              <NavLink to="/login">
+                Log In
+              </NavLink>
+
+              <Link to="/signup" className="btn btn-primary btn-sm">
+                Sign Up
+              </Link>
+            </>
+          )}
+        </nav>
+
+        <button
+          type="button"
+          className={`hamburger ${open ? "is-open" : ""}`}
+          onClick={toggleMenu}
+          aria-label={open ? "Close menu" : "Open menu"}
+          aria-expanded={open}
+          aria-controls="main-navigation"
+        >
+          <span></span>
+          <span></span>
+          <span></span>
+        </button>
+      </div>
+    </header>
   );
 }
