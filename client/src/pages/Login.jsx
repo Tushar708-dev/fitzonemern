@@ -32,6 +32,9 @@ export default function Login() {
           {error && <p className="notice notice-error">{error}</p>}
           <label>Email<input type="email" name="email" value={form.email} onChange={onChange} required autoComplete="email" /></label>
           <label>Password<input type="password" name="password" value={form.password} onChange={onChange} required autoComplete="current-password" /></label>
+          <p className="muted small" style={{ textAlign: "right", marginTop: "-0.4rem" }}>
+            <Link to="/forgot-password">Forgot password?</Link>
+          </p>
           <button className="btn btn-primary btn-block" disabled={busy}>{busy ? "Logging in…" : "Log In"}</button>
           <p className="muted small center">No account? <Link to="/signup">Sign up</Link></p>
         </form>
